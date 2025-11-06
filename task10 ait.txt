@@ -1,0 +1,19 @@
+# Simple fact representation in Python
+
+facts = [
+    ("likes", "Ram", "mango"),
+    ("is_a", "Seema", "girl"),
+    ("likes", "Bill", "Cindy"),
+    ("is_color", "Rose", "red"),
+    ("owns", "John", "gold")
+]
+
+# Function to print facts nicely
+def show_facts(facts):
+    for fact in facts:
+        relation, subject, obj = fact
+        print(f"{subject} {relation.replace('_', ' ')} {obj}.")
+
+# Example usage
+if __name__ == "__main__":
+    show_facts(facts)

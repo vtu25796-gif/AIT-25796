@@ -1,0 +1,76 @@
+from collections import deque
+
+class StockNetwork:
+    def __init__(self):
+        # Graph to represent connections between warehouses/stores
+        self.graph = {}
+        # Stock levels at each warehouse
+        self.stock = {}
+
+    def add_warehouse(self, name, stock=0):
+        """Add a warehouse/store to the network"""
+        self.graph[name] = []
+        self.stock[name] = stock
+
+    def add_route(self, from_wh, to_wh):
+        """Add a bidirectional transfer route"""
+        self.graph[from_wh].append(to_wh)
+        self.graph[to_wh].append(from_wh)
+
+    def bfs_shortest_path(self, start, goal):
+        """Find the shortest route between two warehouses"""
+        visited = set()
+        queue = deque([[start]])
+
+        while queue:
+            path = queue.popleft()
+            node = path[-1]
+
+            if node == goal:
+                return path  # Found the shortest path
+
+            if node not in visited:
+                visited.add(node)
+                for neighbor in self.graph[node]:
+                    new_path = list(path)
+                    new_path.append(neighbor)
+                    queue.append(new_path)
+        return None
+
+    def transfer_stock(self, source, destination, amount):
+        """Transfer stock along the shortest route"""
+        path = self.bfs_shortest_path(source, destination)
+        if not path:
+            print(f"No route found between {source} and {destination}.")
+            return
+
+        if self.stock[source] < amount:
+            print(f"Not enough stock in {source} to transfer {amount}.")
+            return
+
+        # Simulate the transfer
+        self.stock[source] -= amount
+        self.stock[destination] += amount
+        print(f"Transferred {amount} units from {source} to {destination} via {path}")
+        print(f"Updated stock: {self.stock}")
+
+# Example usage
+if __name__ == "__main__":
+    network = StockNetwork()
+
+    # Add warehouses with initial stock
+    network.add_warehouse("A", 100)
+    network.add_warehouse("B", 50)
+    network.add_warehouse("C", 30)
+    network.add_warehouse("D", 0)
+
+    # Add routes (connections)
+    network.add_route("A", "B")
+    network.add_route("B", "C")
+    network.add_route("C", "D")
+
+    # Find the shortest route using BFS
+    print("Shortest path from A to D:", network.bfs_shortest_path("A", "D"))
+
+    # Transfer stock along that path
+    network.transfer_stock("A", "D", 20)

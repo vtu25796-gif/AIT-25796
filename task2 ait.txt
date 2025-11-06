@@ -1,0 +1,63 @@
+class WeatherNetwork:
+    def __init__(self):
+        self.graph = {}
+        self.weather = {}
+
+    def add_city(self, city, condition="Clear"):
+        """Add a city to the weather network."""
+        self.graph[city] = []
+        self.weather[city] = condition
+
+    def add_connection(self, city1, city2):
+        """Connect two cities (bidirectional)."""
+        self.graph[city1].append(city2)
+        self.graph[city2].append(city1)
+
+    def dfs_forecast(self, city, new_condition, visited=None):
+        """Use DFS to spread a weather condition to connected cities."""
+        if visited is None:
+            visited = set()
+        visited.add(city)
+
+        # Update the weather condition
+        self.weather[city] = new_condition
+        print(f"Forecast updated: {city} → {new_condition}")
+
+        # Recursively visit connected cities
+        for neighbor in self.graph[city]:
+            if neighbor not in visited:
+                self.dfs_forecast(neighbor, new_condition, visited)
+
+    def show_weather(self):
+        """Display the current weather in all cities."""
+        print("\nCurrent Weather Forecast:")
+        for city, condition in self.weather.items():
+            print(f"  {city}: {condition}")
+
+
+# Example usage
+if __name__ == "__main__":
+    network = WeatherNetwork()
+
+    # Add cities
+    network.add_city("New York")
+    network.add_city("Boston")
+    network.add_city("Chicago")
+    network.add_city("Denver")
+    network.add_city("San Francisco")
+
+    # Add connections (how weather can move)
+    network.add_connection("New York", "Boston")
+    network.add_connection("Boston", "Chicago")
+    network.add_connection("Chicago", "Denver")
+    network.add_connection("Denver", "San Francisco")
+
+    # Show initial weather
+    network.show_weather()
+
+    print("\n--- Starting DFS Forecast ---")
+    # Suppose a rain system starts in New York
+    network.dfs_forecast("New York", "Rainy")
+
+    # Show final weather conditions after DFS traversal
+    network.show_weather()
